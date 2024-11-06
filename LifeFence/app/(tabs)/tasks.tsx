@@ -16,6 +16,7 @@ import TaskCheckbox from "@/components/TaskCheckBox";
 import { BASE_URL } from "@/constants/apiConfig";
 import { authHelper } from "@/utils/auth";
 import { Ionicons } from "@expo/vector-icons";
+import NewObject from "@/components/NewObject";
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -202,12 +203,7 @@ const TasksPage = () => {
         }
         className="mb-16"
       />
-      <TouchableOpacity
-        className="absolute bottom-5 right-5 bg-blue-600 rounded-full p-4"
-        onPress={showCreateTaskModal}
-      >
-        <Ionicons name="add" size={24} color="white" />
-      </TouchableOpacity>
+      <NewObject callback={showCreateTaskModal} />
 
       <Modal
         visible={isCreateTaskModalVisible}

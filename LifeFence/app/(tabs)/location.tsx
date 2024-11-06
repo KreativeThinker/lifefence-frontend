@@ -4,6 +4,7 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { BASE_URL } from "@/constants/apiConfig";
 import { authHelper } from "@/utils/auth";
+import NewObject from "@/components/NewObject";
 
 export default function App() {
   const [location, setLocation] = useState(null);
@@ -134,12 +135,7 @@ export default function App() {
               />
             ))}
           </MapView>
-          <TouchableOpacity
-            className="absolute bottom-0 right-5 bg-blue-500 p-4 rounded-full"
-            onPress={() => setModalVisible(true)}
-          >
-            <Text className="text-white font-bold">Save Location</Text>
-          </TouchableOpacity>
+          <NewObject callback={() => setModalVisible(true)} />
 
           {/* Modal for address and location type input */}
           <Modal
