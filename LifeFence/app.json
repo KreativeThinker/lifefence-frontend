@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "LifeFence",
+    "slug": "LifeFence",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "react-native-background-geolocation"
+    ],
+    "userInterfaceStyle": "automatic",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.kreativethinker.LifeFence"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b805b4ae-db75-445d-9b5e-1784a0b62fec"
+      }
+    }
+  }
+}
