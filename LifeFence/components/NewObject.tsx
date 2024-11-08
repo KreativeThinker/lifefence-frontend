@@ -1,12 +1,20 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { TouchableNativeFeedback, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 export default function NewObject({ callback }) {
   return (
-    <View className="absolute bottom-5 right-5 bg-blue-500 rounded-full p-4 shadow-lg">
-      <TouchableNativeFeedback onPress={callback}>
-        <MaterialIcons name="add" size={24} color="white" />
-      </TouchableNativeFeedback>
+    <View style={{ position: "absolute", bottom: 20, right: 20 }}>
+      <TouchableOpacity onPress={callback} activeOpacity={0.7}>
+        <View
+          style={{
+            backgroundColor: "#3B82F6",
+            borderRadius: 50,
+            padding: 16,
+          }}
+        >
+          <MaterialIcons name="add" size={24} color="white" />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }

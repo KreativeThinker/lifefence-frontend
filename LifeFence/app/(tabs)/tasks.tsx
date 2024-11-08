@@ -15,7 +15,6 @@ import { Picker } from "@react-native-picker/picker";
 import TaskCheckbox from "@/components/TaskCheckBox";
 import { BASE_URL } from "@/constants/apiConfig";
 import { authHelper } from "@/utils/auth";
-import { Ionicons } from "@expo/vector-icons";
 import NewObject from "@/components/NewObject";
 
 const TasksPage = () => {
@@ -192,7 +191,7 @@ const TasksPage = () => {
   }
 
   return (
-    <View className="flex-1 p-4 bg-white">
+    <View className="flex flex-1 p-4 bg-white">
       <Text className="text-2xl font-bold mb-4">Tasks</Text>
       <FlatList
         data={tasks}
@@ -203,7 +202,6 @@ const TasksPage = () => {
         }
         className="mb-16"
       />
-      <NewObject callback={showCreateTaskModal} />
 
       <Modal
         visible={isCreateTaskModalVisible}
@@ -294,6 +292,8 @@ const TasksPage = () => {
         onConfirm={handleDueDateConfirm}
         onCancel={hideDueDatePicker}
       />
+
+      <NewObject callback={showCreateTaskModal} />
     </View>
   );
 };

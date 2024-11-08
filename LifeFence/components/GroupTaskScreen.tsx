@@ -12,6 +12,7 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { BASE_URL } from "@/constants/apiConfig";
 import { authHelper } from "@/utils/auth";
+import NewObject from "./NewObject";
 
 export default function GroupTaskScreen({ groupId }) {
   const [tasks, setTasks] = useState([]);
@@ -117,7 +118,7 @@ export default function GroupTaskScreen({ groupId }) {
   return (
     <View className="flex-1 p-4">
       <Text className="text-lg font-bold mb-4">Group Tasks</Text>
-      <Button title="Add Task" onPress={() => setModalVisible(true)} />
+      <NewObject callback={() => setModalVisible(true)} />
 
       {tasks.length === 0 ? (
         <Text>No tasks found.</Text>
@@ -161,14 +162,13 @@ export default function GroupTaskScreen({ groupId }) {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
-          <View className="w-11/12 bg-white p-6 rounded-lg">
+        <View className="flex-1 flex flex-col  justify-center items-center bg-black bg-opacity-50">
+          <View className="w-11/12 bg-white p-6 gap-4 rounded-lg">
             <Text className="text-xl font-bold mb-4">Add New Task</Text>
             <TextInput
               placeholder="Task Title"
               value={newTask.title}
               onChangeText={(text) => setNewTask({ ...newTask, title: text })}
-              className="border p-2 mb-3"
             />
             <TextInput
               placeholder="Description"
@@ -176,7 +176,6 @@ export default function GroupTaskScreen({ groupId }) {
               onChangeText={(text) =>
                 setNewTask({ ...newTask, description: text })
               }
-              className="border p-2 mb-3"
             />
             <Button title="Pick Due Date" onPress={showDatePicker} />
             <Text className="text-gray-600">
