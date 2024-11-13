@@ -21,14 +21,12 @@ const TaskCheckbox = ({ taskId, checkState }) => {
           },
         },
       );
-      console.log(checked);
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const data = await response.json();
-      console.log(data);
 
       Alert.alert(
         "Success",
@@ -36,7 +34,6 @@ const TaskCheckbox = ({ taskId, checkState }) => {
       );
     } catch (error) {
       console.error("Error:", error);
-      // Revert the checkbox state if the API call fails
       setIsChecked(!checked);
       Alert.alert("Error", "Failed to update task status.");
     }
