@@ -19,8 +19,6 @@ export const authHelper = {
   },
 
   async signup(username, password, name, email, dob) {
-    console.log(dob);
-
     const response = await fetch(`${BASE_URL}/auth/signup`, {
       method: "POST",
       headers: {
@@ -34,12 +32,6 @@ export const authHelper = {
         dob,
       }),
     });
-
-    if (!response.ok) {
-      console.log(response);
-
-      throw new Error("Signup failed!");
-    }
   },
 
   async isAuthenticated() {
