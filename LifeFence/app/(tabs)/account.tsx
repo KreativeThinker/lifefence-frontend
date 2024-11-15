@@ -61,6 +61,7 @@ export default function AccountScreen() {
           <Text>Email: {userDetails.email}</Text>
           <Text>Username: {userDetails.username}</Text>
           <Text>Date of Birth: {userDetails.dob}</Text>
+          <Text>User ID: {userDetails.id}</Text>
         </>
       ) : (
         <Text>No user details available.</Text>

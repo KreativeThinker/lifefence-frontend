@@ -4,7 +4,7 @@ import IndexScreen from "./index";
 import AccountScreen from "./account";
 import TasksScreen from "./tasks";
 import LocationScreen from "./location";
-import { GroupsNavigator } from "./GroupsNavigator"; // Use the GroupsNavigator
+import { GroupsNavigator } from "./GroupsNavigator";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 
 const Tab = createBottomTabNavigator();
@@ -64,7 +64,7 @@ export function Tabs() {
       />
       <Tab.Screen
         name="(tabs)/groups"
-        component={GroupsNavigator} // Use the navigator here
+        component={GroupsNavigator}
         options={{
           tabBarLabel: "Groups",
           tabBarIcon: ({ color, focused }) => (
