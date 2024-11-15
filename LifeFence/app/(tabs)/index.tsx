@@ -1,22 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { BASE_URL } from "@/constants/apiConfig";
 import { authHelper } from "@/utils/auth";
 import TaskList from "@/components/TaskList";
+import CreateActionModal from "@/components/CreateActionModal";
+import NewObject from "@/components/NewObject";
 
 const App = () => {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [markers, setMarkers] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const GEOFENCE_RADIUS = 200; // Set radius for geofence in meters
 
   // Calculate the distance between two coordinates (Haversine formula)
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    console.log(".");
-
     const R = 6371e3; // Earth radius in meters
     const phi1 = (lat1 * Math.PI) / 180;
     const phi2 = (lat2 * Math.PI) / 180;
@@ -33,9 +34,169 @@ const App = () => {
 
     return R * c; // Distance in meters
   };
-  const checkGeofence = (userLocation) => {
-    console.log("Checking Geofence...");
-    markers.forEach((marker) => {
+  //
+  // const executeAllActions = async (locationId) => {
+  //   try {
+  //     // Step 1: Fetch active actions for the user's location
+  //     const actionsResponse = await fetch(
+  //       `${BASE_URL}/actions/view?location_id=${locationId.id}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${await authHelper.getToken()}`,
+  //         },
+  //       },
+  //     );
+  //
+  //     const actionsData = await actionsResponse.json();
+  //     console.log(actionsData);
+  //
+  //     if (!actionsResponse.ok) {
+  //       Alert.alert(
+  //         "Error",
+  //         actionsData.detail || "Failed to fetch active actions.",
+  //       );
+  //       return;
+  //     }
+  //
+  //     if (actionsData.length === 0) {
+  //       Alert.alert("Info", "No active actions for this location.");
+  //       return;
+  //     }
+  //
+  //     for (const action of actionsData) {
+  //       try {
+  //         const triggerResponse = await fetch(
+  //           `${BASE_URL}/actions/trigger/${action.id}`,
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //               Authorization: `Bearer ${await authHelper.getToken()}`,
+  //             },
+  //           },
+  //         );
+  //
+  //         const triggerData = await triggerResponse.json();
+  //
+  //         if (!triggerResponse.ok) {
+  //           Alert.alert(
+  //             "Error",
+  //             `Failed to trigger action ${action.id}: ${triggerData.detail || "Unknown error."}`,
+  //           );
+  //           continue;
+  //         }
+  //       } catch (triggerError) {
+  //         console.error(`Error triggering action ${action.id}:`, triggerError);
+  //       }
+  //     }
+  //
+  //     Alert.alert(
+  //       "Geofence Alert",
+  //       `You are within range of ${locationId.title}`,
+  //     );
+  //   } catch (error) {
+  //     console.error("Error fetching or executing actions:", error);
+  //     Alert.alert("Error", "An error occurred while processing the actions.");
+  //   }
+  // };
+  //
+
+  const executeAllActions = async (locationId) => {
+    try {
+      const actionsResponse = await fetch(
+        `${BASE_URL}/actions/view?location_id=${locationId.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await authHelper.getToken()}`,
+          },
+        },
+      );
+
+      const actionsData = await actionsResponse.json();
+
+      if (!actionsResponse.ok) {
+        Alert.alert(
+          "Error",
+          actionsData.detail || "Failed to fetch active actions.",
+        );
+        return;
+      }
+
+      if (actionsData.length === 0) {
+        Alert.alert("Info", "No active actions for this location.");
+        return;
+      }
+
+      for (const action of actionsData) {
+        console.log(action);
+        try {
+          const triggerResponse = await fetch(
+            `${BASE_URL}/actions/trigger/${action.id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${await authHelper.getToken()}`,
+              },
+            },
+          );
+
+          const triggerData = await triggerResponse.json();
+
+          if (!triggerResponse.ok) {
+            Alert.alert(
+              "Error",
+              `Failed to trigger action ${action.id}: ${triggerData.detail || "Unknown error."}`,
+            );
+            continue;
+          }
+
+          // Custom behavior for the "trigger_function"
+          if (action.trigger_function === "add") {
+            console.log("add");
+
+            const endDate = new Date(action.end_time);
+            const addedMonth = new Date(
+              endDate.setMonth(endDate.getMonth() + 1),
+            );
+            Alert.alert(
+              "Add Action Triggered",
+              `The new date is: ${addedMonth.toDateString()}`,
+            );
+          } else if (action.trigger_function === "time") {
+            console.log("time");
+            const currentTime = new Date();
+            Alert.alert(
+              "Time Action Triggered",
+              `The time is ${currentTime.getHours()}:${currentTime.getMinutes()} and you are in ${locationId.title}`,
+            );
+          } else {
+            console.log(
+              `Unhandled trigger function: ${triggerData.trigger_function}`,
+            );
+          }
+        } catch (triggerError) {
+          console.error(`Error triggering action ${action.id}:`, triggerError);
+        }
+      }
+
+      Alert.alert(
+        "Geofence Alert",
+        `You are within range of ${locationId.title}`,
+      );
+    } catch (error) {
+      console.error("Error fetching or executing actions:", error);
+      Alert.alert("Error", "An error occurred while processing the actions.");
+    }
+  };
+
+  const checkGeofence = async (userLocation) => {
+    // console.log("Checking Geofence...");
+    for (const marker of markers) {
       const distance = calculateDistance(
         userLocation.latitude,
         userLocation.longitude,
@@ -43,19 +204,19 @@ const App = () => {
         marker.longitude,
       );
 
-      console.log("Distance to marker:", distance);
+      // console.log("Distance to marker:", distance);
 
       if (distance < GEOFENCE_RADIUS) {
-        Alert.alert(
-          "Geofence Alert",
-          `You are within range of ${marker.title}`,
-        );
-        console.log("In range of:", marker.title);
+        // Alert.alert(
+        // "Geofence Alert",
+        // `You are within range of ${marker.title}`,
+        // );
+        // console.log("In range of:", marker.title);
         setCurrentLocation(marker);
+        executeAllActions(marker);
       }
-    });
+    }
   };
-
   // Fetch location and markers on mount
   useEffect(() => {
     (async () => {
@@ -86,15 +247,17 @@ const App = () => {
         });
 
         const data = await response.json();
-        setMarkers(
-          data.map((item) => ({
-            id: item.id,
-            latitude: item.latitude,
-            longitude: item.longitude,
-            title: item.address,
-            description: item.location_type,
-          })),
-        );
+        if (data) {
+          setMarkers(
+            data.map((item) => ({
+              id: item.id,
+              latitude: item.latitude,
+              longitude: item.longitude,
+              title: item.address,
+              description: item.location_type,
+            })),
+          );
+        }
       } catch (error) {
         console.error("Error fetching locations:", error);
       }
@@ -145,6 +308,14 @@ const App = () => {
       ) : (
         <Text>Loading...</Text>
       )}
+      <NewObject callback={() => setModalVisible(true)} />
+
+      <CreateActionModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        locations={markers}
+        onActionCreated={() => Alert.alert("Action Created")}
+      />
     </View>
   );
 };
