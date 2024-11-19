@@ -3,11 +3,11 @@ import { View, Text, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { BASE_URL } from "@/constants/apiConfig";
-import { SendDirectSms } from "react-native-send-direct-sms";
 import { authHelper } from "@/utils/auth";
 import TaskList from "@/components/TaskList";
 import CreateActionModal from "@/components/CreateActionModal";
 import NewObject from "@/components/NewObject";
+import * as SMS from "expo-sms";
 
 const App = () => {
   const [location, setLocation] = useState(null);
@@ -35,12 +35,6 @@ const App = () => {
 
     return R * c; // Distance in meters
   };
-
-  async function sendSmsData(mobileNumber, bodySMS) {
-    SendDirectSms(mobileNumber, bodySMS)
-      .then((res) => console.log("SMS sent successfully", res))
-      .catch((err) => console.error("Error sending SMS", err));
-  }
 
   const executeAllActions = async (locationId) => {
     try {
@@ -114,10 +108,16 @@ const App = () => {
               `The time is ${currentTime.getHours()}:${currentTime.getMinutes()} and you are in ${locationId.title}`,
             );
           } else if (action.trigger_function === "sms") {
-            await sendSmsData(
-              "+918287760026",
-              `Hey, I am at ${locationId.title}, do you need anything?`,
-            );
+            const isAvailable = await SMS.isAvailableAsync();
+            if (isAvailable) {
+              await SMS.sendSMSAsync(
+                ["8287760026"],
+                `Hey, I am at ${locationId.title}, do you need anything from here?`,
+              );
+              Alert.alert("SMS Sent");
+            } else {
+              Alert.alert("Error", "SMS is not available on this device.");
+            }
           } else {
             console.log(
               `Unhandled trigger function: ${triggerData.trigger_function}`,
